@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flappy Bird</title>
+    <style>
+        #game-container {
+            position: relative;
+            width: 400px;
+            height: 500px;
+            margin: 0 auto;
+            border: 1px solid #000;
+        }
+        
+        #bird {
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 50px;
+            height: 50px;
+            background-color: #f00;
+        }
+        
+        .pipe {
+            position: absolute;
+            width: 80px;
+            height: 300px;
+            background-color: #0f0;
+        }
+        
+        #pipe-upper {
+            top: 0;
+        }
+        
+        #pipe-lower {
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="bird"></div>
+        <div id="pipe-upper" class="pipe"></div>
+        <div id="pipe-lower" class="pipe"></div>
+    </div>
+    
+    <script>
+        var bird = document.getElementById('bird');
+        var pipeUpper = document.getElementById('pipe-upper');
+        var pipeLower = document.getElementById('pipe-lower');
+        var gameContainer = document.getElementById('game-container');
+        var gameInterval;
+        
+        var gravity = 2;
+        var jumpHeight = 50;
+        var gapHeight = 150;
+        var pipeSpeed = 5;
+        var score = 0;
+        
+        function startGame() {
+            bird.style.top = '50px';
+            score = 0;
+            
+            gameInterval = setInterval(function() {
+                var birdTop = parseInt(window.getComputedStyle(bird).getPropertyValue('top'));
+                var pipeUpperLeft = parseInt(window.getComputedStyle(pipeUpper).getPropertyValue('left'));
+                var pipeLowerLeft = parseInt(window.getComputedStyle(pipeLower).getPropertyValue('left'));
+                
+                if (birdTop <= 0 || birdTop >= 450 ||
+                    (pipeUpperLeft <= 100 && pipeUpperLeft >= 0 && (birdTop <= pipeUpper.clientHeight || birdTop >= pipeUpper.clientHeight + gapHeight)) ||
+                    (pipeLowerLeft <= 100 && pipeLowerLeft >= 0 && (birdTop >= gameContainer.clientHeight - pipeLower.clientHeight || birdTop <= gameContainer.clientHeight - pipeLower.clientHeight - gapHeight))) {
+                    clearInterval(gameInterval);
+                    alert('Game over! Score: ' + score);
+                    startGame();
+                }
+                
+                pipeUpper.style.left = pipeUpperLeft - pipeSpeed + 'px';
+                pipeLower.style.left = pipeLowerLeft - pipeSpeed + 'px';
+                
+                if (pipeUpperLeft <= -80) {
+                    pipeUpper.style.left = '400px';
+                    pipeLower.style.left = '400px';
+                    score++;
+                }
+            }, 10);
+        }
+        
+        function jump() {
+            var birdTop = parseInt(window.getComputedStyle(bird).getPropertyValue('top'));
+            bird.style.top = (birdTop - jumpHeight) + 'px';
+        }
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.code === 'Space') {
+                jump();
+            }
+        });
+        
+        startGame();
+    </script>
+</body>
+</html>
